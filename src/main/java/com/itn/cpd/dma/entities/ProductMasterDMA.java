@@ -22,10 +22,12 @@ public class ProductMasterDMA {
     private UUID id;
     @Column(name = "product_name")
     private String productName;
+    @Column(name = "break_level")
+    private Long breakLevel;
     @Column(name="pack")
     private String pack;
     @Column(name= "size")
-    private Integer size;
+    private Long size;
     @Column (name ="unit_of_measure_id")
     private String uomId;
     @Column (name = "brand")
@@ -43,21 +45,21 @@ public class ProductMasterDMA {
     @Column (name = "notes")
     private String notes;
     @Column (name = "partner_id")
-    private Integer partnerId;
+    private Long partnerId;
     @Column (name = "product_number")
     private String productNumber;
     @Column (name = "brand_id")
-    private Integer brandId;
+    private Long brandId;
     @Column (name = "status_id")
-    private Integer statusId;
+    private Long statusId;
     @Column (name="created")
     private Date dateCreated;
     @Column (name = "modified")
     private Date dateModified;
     @Column (name = "logon_id")
-    private Integer logonId;
+    private Long logonId;
     @Column (name = "i_alt_id")
-    private Integer altIdInt;
+    private Long altIdInt;
     @Column (name = "s_alt_id")
     private String altIdStr;
 
