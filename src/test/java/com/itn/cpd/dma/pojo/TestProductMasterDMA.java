@@ -2,6 +2,7 @@ package com.itn.cpd.dma.pojo;
 
 import com.itn.cpd.dma.entities.ProductMasterDMA;
 import com.itn.cpd.dma.repositories.ProductMasterDMARepository;
+import com.itn.cpd.dma.services.SearchService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import com.github.javafaker.Faker;
@@ -22,6 +23,8 @@ import java.util.stream.Stream;
 public class TestProductMasterDMA {
     @Autowired
     ProductMasterDMARepository productMasterDMARepository;
+    @Autowired
+    SearchService searchService;
     Faker faker = new Faker();
     @Test
     public void createDummyProducts(){
@@ -33,22 +36,27 @@ public class TestProductMasterDMA {
 
     @Test
     public void createDummyFromFile(){
-        String fileName = "src/test/resources/ItemMaster-DMA-100-Items.txt";
+        String fileName = "src/test/resources/ItemMaster-DMA-10000-Items.csv";
+        //String fileName = "src/test/resources/ItemMaster-non-DMA-Items.csv";
         //read file into stream, try-with-resources
         try (Stream<String> stream = Files.lines(Paths.get(fileName)).skip(1)) {
             stream.forEach(line -> {
                 ProductMasterDMA product = createProduct(line);
-                System.out.println(product.toString());
-                //productMasterDMARepository.save(product);
+                //System.out.println(product.toString());
+                productMasterDMARepository.save(product);
+                try {
+                    searchService.addIndex(product);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             });
-
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     private ProductMasterDMA createProduct(String line) {
-        String[] properties = line.split("\\s");
+        String[] properties = line.split(",");
         return ProductMasterDMA.builder()
                 .altIdInt(lValue(properties[0]))
                 .partnerId(lValue(properties[1]))
@@ -97,7 +105,6 @@ public class TestProductMasterDMA {
     private ProductMasterDMA createDummyProduct() {
         return ProductMasterDMA.builder()
                 .productName(faker.harryPotter().character())
-                .brand(faker.harryPotter().location())
                 .brandId(Long.valueOf(faker.number().numberBetween(100, 999)))
                 .uomId(faker.idNumber().toString())
                 .productNumber(faker.number().digits(8))

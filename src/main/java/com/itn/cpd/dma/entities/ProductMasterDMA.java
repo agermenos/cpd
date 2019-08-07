@@ -26,14 +26,8 @@ public class ProductMasterDMA {
     private Long breakLevel;
     @Column(name="pack")
     private String pack;
-    @Column(name= "size")
-    private Long size;
     @Column (name ="unit_of_measure_id")
     private String uomId;
-    @Column (name = "brand")
-    private String brand;
-    @Column (name = "brand_owner")
-    private String brandOwner;
     @Column (name = "manufacturer_number")
     private String manufacturerNumber;
     @Column (name="upc")
@@ -63,7 +57,7 @@ public class ProductMasterDMA {
     @Column (name = "s_alt_id")
     private String altIdStr;
 
-    @PrePersist
+    //@PrePersist
     public void prePersist(){
         if (id==null) {
             dateCreated = new Date();
