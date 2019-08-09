@@ -3,6 +3,8 @@ package com.itn.cpd.dma.controllers;
 import com.itn.cpd.dma.services.SearchService;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.*;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,7 +13,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class DmaProductController {
@@ -27,12 +31,12 @@ public class DmaProductController {
     }
 
     @RequestMapping("/demo/match/")
-    public ResponseEntity<String> matchItems(@RequestParam(name = "musts", required = false) String musts,
-                                             @RequestParam(name = "shoulds", required = false) String shoulds,
-                                             @RequestParam(name = "nots", required = false) String nots,
-                                             @RequestParam(name = "regex", required = false) String regex,
-                                             @RequestParam(name = "indexName") String indexName,
-                                             @RequestParam(name = "explain", defaultValue = "false") boolean explain) throws IOException {
+    public ResponseEntity<List<String>> matchItems(@RequestParam(name = "musts", required = false) String musts,
+                                                @RequestParam(name = "shoulds", required = false) String shoulds,
+                                                @RequestParam(name = "nots", required = false) String nots,
+                                                @RequestParam(name = "regex", required = false) String regex,
+                                                @RequestParam(name = "indexName") String indexName,
+                                                @RequestParam(name = "explain", defaultValue = "false") boolean explain) throws IOException {
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
         BoolQueryBuilder booleanQuery = QueryBuilders.boolQuery();
 
@@ -49,11 +53,13 @@ public class DmaProductController {
             sourceBuilder.query(regexpQueryBuilder).explain(explain);
         }
         SearchResponse searchResponse = searchService.searchItems(sourceBuilder, indexName);
-        return (new ResponseEntity<>(searchResponse.toString(), HttpStatus.OK));
+        List<String> searchItems= Arrays.stream(searchResponse.getHits().getHits()).map(query -> query.getSourceAsString()).collect(Collectors.toList());
+        return (new ResponseEntity<>(searchItems, HttpStatus.OK));
     }
 
     private void loadBooleanQuery(BoolQueryBuilder booleanQuery, String including, int type) {
         List<String[]> values;
+        if (including.trim().length()==0) return;
         switch(type) {
             case MUSTS: values = getValues(including);
                 for (String[] value : values) {
