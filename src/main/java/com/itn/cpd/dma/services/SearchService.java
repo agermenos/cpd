@@ -25,7 +25,7 @@ public class SearchService {
 
         IndexRequest indexRequest = new IndexRequest("products")
                 .id(product.getId().toString()).source(gson.toJson(product), XContentType.JSON);
-        indexRequest.create(true);
+        indexRequest.opType("create").create(true);
         client.index(indexRequest, RequestOptions.DEFAULT);
     }
 
