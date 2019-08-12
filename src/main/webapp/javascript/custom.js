@@ -1,17 +1,24 @@
 $.makeTable = function (mydata) {
-    var table = $('<table border=1>');
-    var tblHeader = "<tr>";
-    for (var k in mydata[0]) tblHeader += "<th>" + k + "</th>";
-    tblHeader += "</tr>";
+    var table = $("<table id=\"response-table\" class=\"table table-condensed table-striped\">");
+    var tblHeader = "<thead><tr>";
+    for (var k in mydata[0]) {
+        if (k!=="id" && k!=="altIdStr") tblHeader += "<th>" + k + "</th>";
+    }
+    tblHeader += "</tr><tbody>";
     $(tblHeader).appendTo(table);
     $.each(mydata, function (index, value) {
         var TableRow = "<tr>";
         $.each(value, function (key, val) {
-            TableRow += "<td>" + val + "</td>";
+            if (key==="id" || key==="altIdStr") {
+                TableRow += "<td style='display:none'>" + val + "</td>";
+            }
+            else {TableRow += "<td>" + val + "</td>";}
+
         });
         TableRow += "</tr>";
         $(table).append(TableRow);
     });
+    $(table).append("</tbody>");
     return ($(table));
 };
 
@@ -21,19 +28,18 @@ $(function () {
             case 'must':return "list-group-item-success";
             case 'should':return "list-group-item-secondary";
             case 'not':return "list-group-item-danger";
-        };
+        }
     }
 
     $('#query-adder').on('click', function () {
-        $('#query-list').show();
+        var list = $('#query-list');
         var queryName = $('#query-field').val();
         var queryType = $('#query-type').val();
         var queryValue = $('#query-value').val();
-        $('#query-list').append("" +
+        list.show();
+        list.append("" +
             "<li class=\"list-group-item " + chooseColor(queryType) + " d-flex justify-content-between align-items-center\">" +
-                    queryName+":"+queryType+":"+queryValue +
-                "<button align=\"right\" type=\"button\" class=\"btn btn-primary btn-sm\" onclick='$(this).closest(\"li\").remove();'>-</button>\n" +
-            " </li>"
+            queryName + ":" + queryType + ":" + queryValue + "<button align=\"right\" type=\"button\" class=\"btn btn-primary btn-sm\" onclick='$(this).closest(\"li\").remove();'>-</button>\n </li>"
         );
     });
 
@@ -48,8 +54,8 @@ $(function () {
                 case 'should':shoulds.push(query[0]+"="+query[2]);break;
                 case 'not':nots.push(query[0]+"="+query[2]);break;
             }
-        })
-        var requestBody = new Object();
+        });
+        var requestBody = {};
         requestBody.musts = musts.toString().replace("-\n","").trim();
         requestBody.nots = nots.toString().replace("-\n","").trim();
         requestBody.shoulds=shoulds.toString().replace("-\n","").trim();
@@ -61,10 +67,11 @@ $(function () {
             url:"http://localhost:8080/demo/match/"
         }).
         done(function(data) {
-            var wrapper = new Object();
-            wrapper.rows = data;
+            //var wrapper = new Object();
+            //wrapper.rows = data;
+            $("#response-table tr").remove();
             var table = $.makeTable(data);
-            $(table).appendTo("#response-table");
+            $("#response-table").replaceWith($(table));
         });
     });
 });

@@ -1,7 +1,9 @@
 package com.itn.cpd.dma.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
+import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -20,8 +22,11 @@ public class ProductMasterDMA {
     )
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
+    @Column (name = "i_alt_id")
+    private Long altIdInt;
     @Column(name = "product_name")
     private String productName;
+    @JsonIgnore
     @Column(name = "break_level")
     private Long breakLevel;
     @Column(name="pack")
@@ -36,6 +41,7 @@ public class ProductMasterDMA {
     private String gtin;
     @Column (name = "category")
     private String category;
+    @JsonIgnore
     @Column (name = "notes")
     private String notes;
     @Column (name = "partner_id")
@@ -50,10 +56,10 @@ public class ProductMasterDMA {
     private Date dateCreated;
     @Column (name = "modified")
     private Date dateModified;
+    @JsonIgnore
     @Column (name = "logon_id")
     private Long logonId;
-    @Column (name = "i_alt_id")
-    private Long altIdInt;
+    @JsonIgnore
     @Column (name = "s_alt_id")
     private String altIdStr;
 

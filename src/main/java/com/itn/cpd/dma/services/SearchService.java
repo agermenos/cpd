@@ -32,7 +32,10 @@ public class SearchService {
     public SearchResponse searchItems(SearchSourceBuilder sourceBuilder, String indices) throws IOException {
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.indices(indices);
+
+        sourceBuilder.size(100);
         searchRequest.source(sourceBuilder);
+
         return client.search(searchRequest,RequestOptions.DEFAULT);
     }
 }

@@ -1,5 +1,7 @@
 package com.itn.cpd.dma.controllers;
 
+import com.google.gson.Gson;
+import com.itn.cpd.dma.entities.ProductMasterDMA;
 import com.itn.cpd.dma.services.SearchService;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.*;
@@ -22,6 +24,7 @@ public class DmaProductController {
     private static final byte MUSTS = 0;
     private static final byte SHOULDS = 1;
     private static final byte NOTS = 2;
+    private Gson gson=new Gson();
     @Autowired
     SearchService searchService;
 
@@ -31,7 +34,7 @@ public class DmaProductController {
     }
 
     @RequestMapping("/demo/match/")
-    public ResponseEntity<List<String>> matchItems(@RequestParam(name = "musts", required = false) String musts,
+    public ResponseEntity<List<ProductMasterDMA>> matchItems(@RequestParam(name = "musts", required = false) String musts,
                                                 @RequestParam(name = "shoulds", required = false) String shoulds,
                                                 @RequestParam(name = "nots", required = false) String nots,
                                                 @RequestParam(name = "regex", required = false) String regex,
@@ -54,7 +57,8 @@ public class DmaProductController {
         }
         SearchResponse searchResponse = searchService.searchItems(sourceBuilder, indexName);
         List<String> searchItems= Arrays.stream(searchResponse.getHits().getHits()).map(query -> query.getSourceAsString()).collect(Collectors.toList());
-        return (new ResponseEntity<>(searchItems, HttpStatus.OK));
+        List<ProductMasterDMA> productList = searchItems.stream().map(item -> gson.fromJson(item, ProductMasterDMA.class)).collect(Collectors.toList());
+        return (new ResponseEntity<>(productList, HttpStatus.OK));
     }
 
     private void loadBooleanQuery(BoolQueryBuilder booleanQuery, String including, int type) {
