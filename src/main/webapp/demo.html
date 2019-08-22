@@ -16,23 +16,25 @@
         <p class="mb-4">Please use the Search Engine to look for the items you want.</p>
         <div class="row">
             <div class="col-md-12">
-                <ul class="nav nav-tabs">
-                    <li class="nav-item"><a href="" class="active nav-link" data-toggle="pill" data-target="#tabone"><i
+                <ul id="tabs" class="nav nav-tabs">
+                    <li class="nav-item"><a href="" class="active nav-link" id="query" data-toggle="pill" data-target="#tabone"><i
                             class="fa"></i> Query</a></li>
-                    <li class="nav-item"><a class="nav-link" href="" data-toggle="pill" data-target="#tabtwo"><i
-                            class="fa"></i> Regexp</a></li>
+<!--                    <li class="nav-item"><a class="nav-link" href="" id="regexp" data-toggle="pill" data-target="#tabtwo"><i-->
+<!--                            class="fa"></i> Regexp</a></li>-->
                 </ul>
                 <div class="tab-content mt-2">
                     <div class="tab-pane fade show active" id="tabone" role="tabpanel">
                         <div class="py-5">
                             <div class="container">
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-8">
                                         <form class="form-inline d-flex justify-content-center">
                                             <div class="input-group">
                                                 <select id="query-field" class="selectpicker" display="true" data-style="btn-info">
-                                                    <option value="manufacturerNumber">Manufacturer Number</option>
                                                     <option value="productName">Product Name</option>
+                                                    <option value="pack">Pack</option>
+                                                    <option value="uomId">Unit of Measure</option>
+                                                    <option value="manufacturerNumber">Manufacturer Number</option>
                                                     <option value="category">Category</option>
                                                 </select>
                                                 <select id="query-type" class="selectpicker" display="true" data-style="btn-info">
@@ -40,33 +42,68 @@
                                                     <option value="should">Should</option>
                                                     <option value="not">Not</option>
                                                 </select>
+                                                <select id="query-subtype" class="selectpicker" display="true" data-style="btn-info">
+                                                    <option value="match">Match</option>
+                                                    <option value="prefix">Prefix</option>
+                                                    <option value="regexp">Regexp</option>
+                                                </select>
                                                 <input id="query-value" type="text" class="form-control form-control-lg"
                                                        placeholder="Attribute Values space separated for OR" id="form3">
                                                 <button id="query-adder" class="btn btn-primary" type="button">+</button>
                                             </div>
                                         </form>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                       <ul id="query-list" style="display:none" class="list-group">
                                       </ul>
                                     </div>
                                 </div>
-                                <br>
-                                <button id="query-execution" class="btn btn-danger float-right" type="button">Search Items</button>
                             </div>
                         </div>
                     </div>
                     <div class="tab-pane fade" id="tabtwo" role="tabpanel">
-                        <p class="">Which was created for the bliss of souls like mine. I am so happy, my dear friend,
-                            so absorbed in the exquisite.</p>
+                      <div class="py-5">
+                        <div class="container">
+                          <div class="row">
+                              <form class="form-inline d-flex justify-content-center">
+                                <div class="input-group">
+                                  <select id="regex-field" class="selectpicker" display="true" data-style="btn-info">
+                                    <option value="productName">Product Name</option>
+                                    <option value="pack">Pack</option>
+                                    <option value="uomId">Unit of Measure</option>
+                                    <option value="manufacturerNumber">Manufacturer Number</option>
+                                    <option value="category">Category</option>
+                                  </select>
+                                  <select id="regex-pattern" class="selectpicker" display="true" data-style="btn-info">
+                                    <option value="none">Empty Pattern</option>
+                                    <option value="hasValue">Has a Value</option>
+                                    <option value="ignorePads">Ignore Pads</option>
+                                    <option value="startsAndEnds">Starts and Ends with...</option>
+                                    <option value="numberRange">Has a Number Range</option>
+                                    <option value="textRange">Has a text range</option>
+                                  </select>
+                                  <label for="regexContent">  Regex Text: </label>
+                                  <input type="text" class="form-control" id="regexContent" placeholder="Content">
+                                </div>
+                              </form>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                 </div>
+
+                <br>
+                <button id="query-execution" class="btn btn-danger float-right" type="button">Search Items</button>
+                <br>
+              <br>
+                <hr/>
+
             </div>
         </div>
-        <hr/>
-        <div class="row" align="left">
-          <table id="response-table" class="table table-striped">
 
+        <div class="panel panel-default col-mt-8" style="overflow: scroll; height:400px">
+            <div class="panel-heading">Result Values</div>
+          <table id="response-table" class="table table-striped">
             <tr>
               <th scope="col">RESULTS</th>
             </tr>

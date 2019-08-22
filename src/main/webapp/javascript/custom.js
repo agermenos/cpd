@@ -1,5 +1,5 @@
 $.makeTable = function (mydata) {
-    var table = $("<table id=\"response-table\" class=\"table table-condensed table-striped\">");
+    var table = $("<table id=\"response-table\" class=\"table table-condensed table-striped table-sm\">");
     var tblHeader = "<thead><tr>";
     for (var k in mydata[0]) {
         if (k!=="id" && k!=="altIdStr") tblHeader += "<th>" + k + "</th>";
@@ -22,6 +22,15 @@ $.makeTable = function (mydata) {
     return ($(table));
 };
 
+var flattenString = function (textArray) {
+    var returnString=[];
+    for (var index in textArray){
+        var text = textArray[index];
+        returnString.push(text.slice(0, text.length-3));
+    }
+    return returnString.toString();
+};
+
 $(function () {
     function chooseColor(queryType) {
         switch (queryType) {
@@ -35,30 +44,31 @@ $(function () {
         var list = $('#query-list');
         var queryName = $('#query-field').val();
         var queryType = $('#query-type').val();
+        var querySubType = $('#query-subtype').val();
         var queryValue = $('#query-value').val();
         list.show();
         list.append("" +
             "<li class=\"list-group-item " + chooseColor(queryType) + " d-flex justify-content-between align-items-center\">" +
-            queryName + ":" + queryType + ":" + queryValue + "<button align=\"right\" type=\"button\" class=\"btn btn-primary btn-sm\" onclick='$(this).closest(\"li\").remove();'>-</button>\n </li>"
+            queryName + ":" + queryType + ":" + querySubType + ":" + queryValue +  "<button align=\"right\" type=\"button\" class=\"btn btn-primary btn-sm\" onclick='$(this).closest(\"li\").remove();'>-</button>\n </li>"
         );
     });
 
-    $('#query-execution').on('click', function(){
+    var executeBooleanQuery = function () {
         var musts=[];
         var nots=[];
         var shoulds=[];
         $('#query-list').children('li').each(function() {
             var query = this.textContent.split(":");
             switch (query[1]){
-                case 'must':musts.push(query[0]+"="+query[2]);break;
-                case 'should':shoulds.push(query[0]+"="+query[2]);break;
-                case 'not':nots.push(query[0]+"="+query[2]);break;
+                case 'must':musts.push(query[0]+":" + query[2] + "="+query[3]);break;
+                case 'should':shoulds.push(query[0]+":" + query[2] + "="+query[3]);break;
+                case 'not':nots.push(query[0]+":" + query[2] + "="+query[3]);break;
             }
         });
         var requestBody = {};
-        requestBody.musts = musts.toString().replace("-\n","").trim();
-        requestBody.nots = nots.toString().replace("-\n","").trim();
-        requestBody.shoulds=shoulds.toString().replace("-\n","").trim();
+        requestBody.musts = flattenString(musts);
+        requestBody.nots = flattenString(nots);
+        requestBody.shoulds= flattenString(shoulds);
         requestBody.indexName="products";
         $.ajax({
             type:"GET",
@@ -67,11 +77,23 @@ $(function () {
             url:"http://localhost:8080/demo/match/"
         }).
         done(function(data) {
-            //var wrapper = new Object();
-            //wrapper.rows = data;
             $("#response-table tr").remove();
             var table = $.makeTable(data);
             $("#response-table").replaceWith($(table));
         });
+    };
+
+    var executeRegexpQuery = function () {
+        alert("hola, mundo");
+    };
+
+    $('#query-execution').on('click', function(){
+            var ref_this = $('ul#tabs li a.active')[0]['id'];
+            if (ref_this==='query') executeBooleanQuery();
+            if (ref_this==='regexp') executeRegexpQuery();
+    });
+
+    $('#badge').on('click', function(){
+       var value=(this.value());
     });
 });

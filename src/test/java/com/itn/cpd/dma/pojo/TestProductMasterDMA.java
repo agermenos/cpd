@@ -36,7 +36,7 @@ public class TestProductMasterDMA {
 
     @Test
     public void createDummyFromFile(){
-        String fileName = "src/test/resources/ItemMaster-DMA-10000-Items.csv";
+        String fileName = "src/test/resources/ItemMaster-DMA-50000-Items.csv";
         //String fileName = "src/test/resources/ItemMaster-non-DMA-Items.csv";
         //read file into stream, try-with-resources
         try (Stream<String> stream = Files.lines(Paths.get(fileName)).skip(1)) {
